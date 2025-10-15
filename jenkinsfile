@@ -1,0 +1,75 @@
+pipeline {
+    agent any
+    
+    stages {
+        stage('Checkout') {
+            steps {
+                sh 'git clone https://github.com/srivatsa-bot/fusionpact-devops-challenge.git'
+            }
+        }
+        
+        stage('Build') {
+            steps {
+                sh """
+                cd fusionpact-devops-challenge
+                docker compose -f docker-compose-app.yml up --build -d
+                """
+                echo "Waiting for services to start..."
+                sleep 10
+            }
+        }
+
+        stage('Testing Frontend'){
+            steps{
+                sh """
+                    curl -f http://localhost:80/ > /dev/null 2>&1 || (echo "Frontend not working" && exit 1)
+                """
+                echo "Frontedn Test cases passed"
+            }
+        }
+        
+        stage('Testing Backend') {
+            steps {
+                sh """
+                    # Test backend endpoints
+                    curl -f http://localhost:80/api || (echo "Backedn failure or Incorrect nginx config " && exit 1)
+                    echo "Backend health check passed"
+                    
+                    # Test user creation
+                    curl -X POST http://localhost:80/users \
+                        -H "Content-Type: application/json" \
+                        -d '{"first_name": "Test", "last_name": "User", "age": 25}' \
+                        -f || (echo "/users failed" && exit 1)
+                    echo "User creation test passed"
+                    
+                    # Test user retrieval
+                    curl -f http://localhost:8/users || (echo "/users failed" && exit 1)
+                    echo "User retrieval test passed"
+                    
+                    # Test metrics endpoint
+                    curl -f http://localhost:80/metrics > /dev/null 2>&1 || (echo "/metrics failed" && exit 1)
+                    echo "Metrics endpoint test passed"
+                """
+
+                echo "Backend tests passed!"
+            }
+        }
+    }
+    
+    post {
+        always {
+            sh """
+                cd fusionpact-devops-challenge
+                docker compose -f docker-compose-app.yml down -v
+            """
+            
+             sh 'rm -rf fusionpact-devops-challenge'
+        }
+        success {
+            echo 'Pipeline succeeded!'
+        }
+        failure {
+            echo 'Pipeline failed!'
+        }
+    }
+}
