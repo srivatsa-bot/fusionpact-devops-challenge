@@ -15,7 +15,7 @@ services:
     build: ./frontend
     container_name: fusion-proxy
     ports:
-      - "9988:80"
+      - "80:80"
     depends_on:
       - backend
     restart: unless-stopped
@@ -25,4 +25,4 @@ services:
       #  configure custom nginx
       - ./nginx/nginx.conf:/etc/nginx/conf.d/default.conf:ro
       # configure html
-      - ./frontend/index.html:/usr/share/nginx/html/index.html:ro
+      - ./frontend/Devops_Intern.html:/usr/share/nginx/html/index.html:ro
