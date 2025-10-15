@@ -4,6 +4,7 @@ pipeline {
     stages {
         stage('Checkout') {
             steps {
+                sh 'rm -rf fusionpact-devops-challenge'
                 sh 'git clone https://github.com/srivatsa-bot/fusionpact-devops-challenge.git'
             }
         }
@@ -15,7 +16,6 @@ pipeline {
                 docker compose -f docker-compose-app.yml up --build -d
                 """
                 echo "Waiting for services to start..."
-                sleep 10
             }
         }
 
@@ -43,7 +43,7 @@ pipeline {
                     echo "User creation test passed"
                     
                     # Test user retrieval
-                    curl -f http://localhost:8/users || (echo "/users failed" && exit 1)
+                    curl -f http://localhost:80/users || (echo "/users failed" && exit 1)
                     echo "User retrieval test passed"
                     
                     # Test metrics endpoint
@@ -54,6 +54,22 @@ pipeline {
                 echo "Backend tests passed!"
             }
         }
+        
+        stage('Deployment'){
+            steps{
+                sh"""
+                    ssh -i ~/.ssh/id_rsa ubuntu@$fastapi_server_ip '
+                        export DEBIAN_FRONTEND=noninteractive
+                        cd fusionpact-devops-challenge
+                        docker compose -f docker-compose-app.yml down
+                        git pull origin main
+                        docker compose -f docker-compose-app.yml up --build -d
+                        sleep 10s
+                    '
+                """
+                echo "ssh sucess"
+            }
+        }
     }
     
     post {
@@ -62,8 +78,6 @@ pipeline {
                 cd fusionpact-devops-challenge
                 docker compose -f docker-compose-app.yml down -v
             """
-            
-             sh 'rm -rf fusionpact-devops-challenge'
         }
         success {
             echo 'Pipeline succeeded!'
