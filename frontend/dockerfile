@@ -1,0 +1,9 @@
+FROM nginx:stable-alpine3.21
+
+WORKDIR /usr/share/nginx/html
+
+RUN rm -rf ./*
+
+COPY Devops_Intern.html index.html
+
+EXPOSE 80
