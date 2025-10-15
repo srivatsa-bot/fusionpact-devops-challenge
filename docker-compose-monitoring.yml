@@ -1,0 +1,39 @@
+---
+volumes:
+  prometheus-data:
+  grafana-data:
+
+#  i am running node exporter in host mode for detailes logs
+services:
+#by default runs on port 9090
+  prometheus:
+    image: prom/prometheus:main
+    container_name: monitoring-prometheus
+    network_mode: host
+    restart: unless-stopped 
+    volumes:
+      - prometheus-data:/prometheus:rw
+      - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+  
+  #ddefault 9100
+  node-exporter:
+    image: quay.io/prometheus/node-exporter:latest
+    container_name: monitoring-node_exporter
+    network_mode: host
+    restart: unless-stopped 
+    command:
+      - '--path.rootfs=/host'
+    pid: host
+    volumes:
+      - '/:/host:ro,rslave'
+
+  # default 3000
+  grafana:
+    image: grafana/grafana-enterprise
+    container_name: monitoring-grafana
+    network_mode: host
+    restart: unless-stopped 
+    volumes:
+      - grafana-data:/var/lib/grafana:rw
+    
+
