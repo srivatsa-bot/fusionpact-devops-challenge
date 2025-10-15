@@ -1,0 +1,28 @@
+networks:
+  fastapi:
+    driver: bridge
+
+services:
+
+  backend:
+    build: ./backend
+    container_name: fastapi-backend
+    restart: unless-stopped
+    networks:
+      - fastapi
+
+  frontend:
+    build: ./frontend
+    container_name: fusion-proxy
+    ports:
+      - "9988:80"
+    depends_on:
+      - backend
+    restart: unless-stopped
+    networks:
+      - fastapi
+    volumes:
+      #  configure custom nginx
+      - ./nginx/nginx.conf:/etc/nginx/conf.d/default.conf:ro
+      # configure html
+      - ./frontend/index.html:/usr/share/nginx/html/index.html:ro
