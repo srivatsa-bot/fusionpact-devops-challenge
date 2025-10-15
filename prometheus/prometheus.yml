@@ -25,13 +25,12 @@ scrape_configs:
   - job_name: "prometheus"
     static_configs:
       - targets: ["localhost:9090"]
-       # The label name is added as a label `label_name=<label_value>` to any timeseries scraped from this config.
         labels:
           app: "prometheus"
 
   - job_name: "fast_api"
     static_configs:
-      - targets: ["localhost:9988"]
+      - targets: ["localhost:8888"]
         labels:
           app: "backend"
   

@@ -7,6 +7,8 @@ services:
   backend:
     build: ./backend
     container_name: fastapi-backend
+    ports:
+      -"8888:8888"
     restart: unless-stopped
     networks:
       - fastapi
