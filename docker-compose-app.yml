@@ -1,3 +1,5 @@
+---
+
 networks:
   fastapi:
     driver: bridge
@@ -16,7 +18,7 @@ services:
     networks:
       - fastapi
     volumes:
-      - backend-data:app/data:rw
+      - backend-data:/backend/app/data:rw
 
   frontend:
     build: ./frontend
