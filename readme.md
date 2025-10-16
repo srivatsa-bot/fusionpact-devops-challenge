@@ -1,6 +1,8 @@
 # Fusionpact DevOps Challenge
 
-A full-stack web application demonstrating modern DevOps practices with FastAPI backend, Nginx frontend, comprehensive monitoring, and automated CI/CD pipeline.
+By srivatsa-bot
+
+email : srivatsaemp101@gmail.com
 
 ## 1) Cloud Deployment
 
@@ -96,7 +98,7 @@ The Jenkins pipeline implements a complete CI/CD workflow with the following sta
    - Run `docker compose -f docker-compose-app.yml up --build -d` to deploy updated application
 
 
-### Local Development
+### For Local Development
 ```bash
 # Start application
 docker compose -f docker-compose-app.yml up --build
@@ -108,14 +110,5 @@ docker compose -f docker-compose-monitoring.yml up -d
 docker compose logs -f
 ```
 
-### Production Deployment
-```bash
-# SSH into server and deploy
-ssh user@server 'cd /path/to/project && docker compose -f docker-compose-app.yml up --build -d'
-```
 
-### Monitoring Setup
-1. Access Grafana at http://localhost:3000
-2. Configure Prometheus as data source
-3. Import monitoring dashboards
-4. Set up alerting rules
+
